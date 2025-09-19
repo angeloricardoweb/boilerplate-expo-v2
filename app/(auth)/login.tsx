@@ -1,6 +1,7 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import {
     Animated,
@@ -87,25 +88,27 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoidingView}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          {/* Banner */}
-          <Animated.View style={[
-            styles.banner, 
-            { 
-              backgroundColor: colors.tint,
-              height: bannerHeight.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 200], // Altura máxima do banner
-              }),
-              opacity: bannerOpacity,
-            }
-          ]}>
-            <Text style={styles.bannerText}>Bem-vindo de volta!</Text>
-          </Animated.View>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar style="light" backgroundColor={colors.tint} />
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardAvoidingView}>
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+            {/* Banner */}
+            <Animated.View style={[
+              styles.banner, 
+              { 
+                backgroundColor: colors.tint,
+                height: bannerHeight.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 200], // Altura máxima do banner
+                }),
+                opacity: bannerOpacity,
+              }
+            ]}>
+              <Text style={styles.bannerText}>Bem-vindo de volta!</Text>
+            </Animated.View>
 
           {/* Nome do App */}
           <Animated.View style={[
@@ -175,11 +178,15 @@ export default function LoginScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  safeArea: {
     flex: 1,
   },
   keyboardAvoidingView: {
