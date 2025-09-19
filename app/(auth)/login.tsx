@@ -1,35 +1,34 @@
+import Button from '@/components/ui/button';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
-    Animated,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Animated,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-  const bannerHeight = new Animated.Value(1);
-  const bannerOpacity = new Animated.Value(1);
-  const appNamePadding = new Animated.Value(40);
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
+  const bannerHeight = useMemo(() => new Animated.Value(1), []);
+  const bannerOpacity = useMemo(() => new Animated.Value(1), []);
+  const appNamePadding = useMemo(() => new Animated.Value(40), []);
+
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
-      setKeyboardVisible(true);
       Animated.parallel([
         Animated.timing(bannerHeight, {
           toValue: 0,
@@ -50,7 +49,6 @@ export default function LoginScreen() {
     });
     
     const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      setKeyboardVisible(false);
       Animated.parallel([
         Animated.timing(bannerHeight, {
           toValue: 1,
@@ -74,7 +72,7 @@ export default function LoginScreen() {
       keyboardDidShowListener?.remove();
       keyboardDidHideListener?.remove();
     };
-  }, []);
+  }, [bannerHeight, bannerOpacity, appNamePadding]);
 
   const handleLogin = () => {
     // Aqui você implementaria a lógica de login
@@ -161,19 +159,21 @@ export default function LoginScreen() {
             />
 
             {/* Botões */}
-            <TouchableOpacity
-              style={[styles.loginButton, { backgroundColor: colors.tint }]}
-              onPress={handleLogin}>
-              <Text style={styles.loginButtonText}>Entrar</Text>
-            </TouchableOpacity>
+            <Button
+              title="Entrar"
+              onPress={handleLogin}
+              variant="primary"
+              size="large"
+              style={styles.loginButton}
+            />
 
-            <TouchableOpacity
-              style={[styles.registerButton, { borderColor: colors.tint }]}
-              onPress={handleRegister}>
-              <Text style={[styles.registerButtonText, { color: colors.tint }]}>
-                Criar Conta
-              </Text>
-            </TouchableOpacity>
+            <Button
+              title="Criar Conta"
+              onPress={handleRegister}
+              variant="outline"
+              size="large"
+              style={styles.registerButton}
+            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -231,25 +231,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   loginButton: {
-    borderRadius: 8,
-    paddingVertical: 16,
-    alignItems: 'center',
     marginTop: 24,
   },
-  loginButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   registerButton: {
-    borderWidth: 2,
-    borderRadius: 8,
-    paddingVertical: 16,
-    alignItems: 'center',
     marginTop: 16,
-  },
-  registerButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });

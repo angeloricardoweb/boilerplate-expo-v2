@@ -1,3 +1,4 @@
+import Button from '@/components/ui/button';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { router } from 'expo-router';
@@ -10,7 +11,6 @@ import {
     StyleSheet,
     Text,
     TextInput,
-    TouchableOpacity,
     View,
 } from 'react-native';
 
@@ -164,19 +164,21 @@ export default function RegisterScreen() {
             />
 
             {/* Botões */}
-            <TouchableOpacity
-              style={[styles.registerButton, { backgroundColor: colors.tint }]}
-              onPress={handleRegister}>
-              <Text style={styles.registerButtonText}>Criar Conta</Text>
-            </TouchableOpacity>
+            <Button
+              title="Criar Conta"
+              onPress={handleRegister}
+              variant="primary"
+              size="large"
+              style={styles.registerButton}
+            />
 
-            <TouchableOpacity
-              style={[styles.loginButton, { borderColor: colors.tint }]}
-              onPress={handleBackToLogin}>
-              <Text style={[styles.loginButtonText, { color: colors.tint }]}>
-                Já tenho uma conta
-              </Text>
-            </TouchableOpacity>
+            <Button
+              title="Já tenho uma conta"
+              onPress={handleBackToLogin}
+              variant="outline"
+              size="large"
+              style={styles.loginButton}
+            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -220,25 +222,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   registerButton: {
-    borderRadius: 8,
-    paddingVertical: 16,
-    alignItems: 'center',
     marginTop: 24,
   },
-  registerButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   loginButton: {
-    borderWidth: 2,
-    borderRadius: 8,
-    paddingVertical: 16,
-    alignItems: 'center',
     marginTop: 16,
-  },
-  loginButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
