@@ -2,9 +2,12 @@ import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { api } from '@/services/axios';
+import { setToken } from '@/storage/token';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useState } from 'react';
+
 import {
   Animated,
   Keyboard,
@@ -14,12 +17,14 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  View,
+  View
 } from 'react-native';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
@@ -47,7 +52,7 @@ export default function LoginScreen() {
         }),
       ]).start();
     });
-    
+
     const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
       Animated.parallel([
         Animated.timing(bannerHeight, {
@@ -74,11 +79,27 @@ export default function LoginScreen() {
     };
   }, [bannerHeight, bannerOpacity, appNamePadding]);
 
-  const handleLogin = () => {
-    // Aqui você implementaria a lógica de login
-    console.log('Login:', { email, password });
-    // Por enquanto, navega para as tabs principais
-    router.replace('/(tabs)');
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError('Email e senha são obrigatórios');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const { data } = await api.post('/auth/login', { email, password });
+
+      await setToken(data.results.token);
+
+      router.replace('/(tabs)');
+
+    } catch {
+      setError('Erro de conexão. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRegister = () => {
@@ -95,8 +116,8 @@ export default function LoginScreen() {
           <ScrollView contentContainerStyle={styles.scrollContent}>
             {/* Banner */}
             <Animated.View style={[
-              styles.banner, 
-              { 
+              styles.banner,
+              {
                 backgroundColor: colors.tint,
                 height: bannerHeight.interpolate({
                   inputRange: [0, 1],
@@ -108,62 +129,76 @@ export default function LoginScreen() {
               <Text style={styles.bannerText}>Bem-vindo de volta!</Text>
             </Animated.View>
 
-          {/* Nome do App */}
-          <Animated.View style={[
-            styles.appNameContainer,
-            {
-              paddingVertical: appNamePadding,
-            }
-          ]}>
-            <Text style={[styles.appTitle, { color: colors.text }]}>Meu App</Text>
-          </Animated.View>
+            {/* Nome do App */}
+            <Animated.View style={[
+              styles.appNameContainer,
+              {
+                paddingVertical: appNamePadding,
+              }
+            ]}>
+              <Text style={[styles.appTitle, { color: colors.text }]}>Meu App</Text>
+            </Animated.View>
 
-          {/* Formulário */}
-          <View style={styles.formContainer}>
-            <Input
-              label="Email"
-              placeholder="Digite seu email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              variant="default"
-              size="large"
-            />
+            {/* Formulário */}
+            <View style={styles.formContainer}>
+              {error ? (
+                <View style={styles.errorContainer}>
+                  <Text style={[styles.errorText, { color: '#FF3B30' }]}>{error}</Text>
+                </View>
+              ) : null}
 
-            <Input
-              label="Senha"
-              placeholder="Digite sua senha"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-              variant="default"
-              size="large"
-            />
+              <Input
+                label="Email"
+                placeholder="Digite seu email"
+                value={email}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  if (error) setError('');
+                }}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                variant="default"
+                size="large"
+              />
 
-            {/* Botões */}
-            <Button
-              title="Entrar"
-              onPress={handleLogin}
-              variant="primary"
-              size="large"
-              style={styles.loginButton}
-            />
+              <Input
+                label="Senha"
+                placeholder="Digite sua senha"
+                value={password}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  if (error) setError('');
+                }}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+                variant="default"
+                size="large"
+              />
 
-            <Button
-              title="Criar Conta"
-              onPress={handleRegister}
-              variant="outline"
-              size="large"
-              style={styles.registerButton}
-            />
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+              {/* Botões */}
+              <Button
+                title="Entrar"
+                onPress={handleLogin}
+                variant="primary"
+                size="large"
+                loading={loading}
+                disabled={loading}
+                style={styles.loginButton}
+              />
+
+              <Button
+                title="Criar Conta"
+                onPress={handleRegister}
+                variant="outline"
+                size="large"
+                style={styles.registerButton}
+              />
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </View>
   );
 }
@@ -202,6 +237,18 @@ const styles = StyleSheet.create({
   formContainer: {
     paddingHorizontal: 20,
     paddingBottom: 40,
+  },
+  errorContainer: {
+    backgroundColor: '#FFEBEE',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF3B30',
+  },
+  errorText: {
+    fontSize: 14,
+    fontWeight: '500',
   },
   loginButton: {
     marginTop: 24,

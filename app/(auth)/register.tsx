@@ -2,16 +2,18 @@ import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { api } from '@/services/axios';
+import { setToken } from '@/storage/token';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 
 export default function RegisterScreen() {
@@ -20,6 +22,8 @@ export default function RegisterScreen() {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
@@ -46,11 +50,15 @@ export default function RegisterScreen() {
     setPhone(formatted);
   };
 
-  const handleRegister = () => {
-    // Aqui você implementaria a lógica de cadastro
-    console.log('Register:', { name, email, phone, password, confirmPassword });
-    // Por enquanto, navega para as tabs principais
-    router.replace('/(tabs)');
+  const handleRegister = async () => {
+    const { data } = await api.post('/auth/register', { name, email, phone, password, confirmPassword });
+
+    if (data.error) {
+      setError(data.message[0]);
+    } else {
+      await setToken(data.results.token);
+      router.replace('/(tabs)');
+    }
   };
 
   const handleBackToLogin = () => {
@@ -70,11 +78,20 @@ export default function RegisterScreen() {
 
           {/* Formulário */}
           <View style={styles.formContainer}>
+            {error ? (
+              <View style={styles.errorContainer}>
+                <Text style={[styles.errorText, { color: '#FF3B30' }]}>{error}</Text>
+              </View>
+            ) : null}
+
             <Input
               label="Nome"
               placeholder="Digite seu nome completo"
               value={name}
-              onChangeText={setName}
+              onChangeText={(text) => {
+                setName(text);
+                if (error) setError('');
+              }}
               autoCapitalize="words"
               autoCorrect={false}
               variant="default"
@@ -85,7 +102,10 @@ export default function RegisterScreen() {
               label="Email"
               placeholder="Digite seu email"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(text) => {
+                setEmail(text);
+                if (error) setError('');
+              }}
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
@@ -97,7 +117,10 @@ export default function RegisterScreen() {
               label="Telefone"
               placeholder="(11) 99999-9999"
               value={phone}
-              onChangeText={handlePhoneChange}
+              onChangeText={(text) => {
+                handlePhoneChange(text);
+                if (error) setError('');
+              }}
               keyboardType="phone-pad"
               maxLength={15}
               variant="default"
@@ -108,7 +131,10 @@ export default function RegisterScreen() {
               label="Senha"
               placeholder="Digite sua senha"
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(text) => {
+                setPassword(text);
+                if (error) setError('');
+              }}
               secureTextEntry
               autoCapitalize="none"
               autoCorrect={false}
@@ -120,7 +146,10 @@ export default function RegisterScreen() {
               label="Confirmar Senha"
               placeholder="Confirme sua senha"
               value={confirmPassword}
-              onChangeText={setConfirmPassword}
+              onChangeText={(text) => {
+                setConfirmPassword(text);
+                if (error) setError('');
+              }}
               secureTextEntry
               autoCapitalize="none"
               autoCorrect={false}
@@ -134,6 +163,8 @@ export default function RegisterScreen() {
               onPress={handleRegister}
               variant="primary"
               size="large"
+              loading={loading}
+              disabled={loading}
               style={styles.registerButton}
             />
 
@@ -172,6 +203,18 @@ const styles = StyleSheet.create({
   formContainer: {
     paddingHorizontal: 20,
     paddingBottom: 40,
+  },
+  errorContainer: {
+    backgroundColor: '#FFEBEE',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF3B30',
+  },
+  errorText: {
+    fontSize: 14,
+    fontWeight: '500',
   },
   registerButton: {
     marginTop: 24,
