@@ -1,4 +1,5 @@
 import Button from '@/components/ui/button';
+import Input from '@/components/ui/input';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { router } from 'expo-router';
@@ -13,7 +14,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 
@@ -120,42 +120,28 @@ export default function LoginScreen() {
 
           {/* Formulário */}
           <View style={styles.formContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>Email</Text>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: colors.background,
-                  borderColor: colors.border,
-                  color: colors.text,
-                },
-              ]}
+            <Input
+              label="Email"
               placeholder="Digite seu email"
-              placeholderTextColor={colors.tabIconDefault}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
+              variant="default"
+              size="large"
             />
 
-            <Text style={[styles.label, { color: colors.text }]}>Senha</Text>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: colors.background,
-                  borderColor: colors.border,
-                  color: colors.text,
-                },
-              ]}
+            <Input
+              label="Senha"
               placeholder="Digite sua senha"
-              placeholderTextColor={colors.tabIconDefault}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
               autoCapitalize="none"
               autoCorrect={false}
+              variant="default"
+              size="large"
             />
 
             {/* Botões */}
@@ -216,19 +202,6 @@ const styles = StyleSheet.create({
   formContainer: {
     paddingHorizontal: 20,
     paddingBottom: 40,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-    marginTop: 16,
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
   },
   loginButton: {
     marginTop: 24,
