@@ -7,6 +7,7 @@ import { setToken } from '@/storage/token';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useState } from 'react';
+import { Easing, Notifier } from 'react-native-notifier';
 
 import {
   Animated,
@@ -92,6 +93,14 @@ export default function LoginScreen() {
       const { data } = await api.post('/auth/login', { email, password });
 
       await setToken(data.results.token);
+      Notifier.showNotification({
+        title: 'Login realizado com sucesso!',
+        description: 'Você está sendo redirecionado para a home.',
+        duration: 0,
+        showAnimationDuration: 800,
+        showEasing: Easing.bounce,
+        hideOnPress: false,
+      });
 
       router.replace('/(tabs)');
 
