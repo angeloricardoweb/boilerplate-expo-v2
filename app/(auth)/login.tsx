@@ -14,7 +14,6 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -118,96 +117,94 @@ export default function LoginScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <StatusBar style="light" backgroundColor={colors.tint} />
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardAvoidingView}>
-          <ScrollView contentContainerStyle={styles.scrollContent}>
-            {/* Banner */}
-            <Animated.View style={[
-              styles.banner,
-              {
-                backgroundColor: colors.tint,
-                height: bannerHeight.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 200], // Altura máxima do banner
-                }),
-                opacity: bannerOpacity,
-              }
-            ]}>
-              <Text style={styles.bannerText}>Bem-vindo de volta!</Text>
-            </Animated.View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {/* Banner */}
+          <Animated.View style={[
+            styles.banner,
+            {
+              backgroundColor: colors.tint,
+              height: bannerHeight.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 200], // Altura máxima do banner
+              }),
+              opacity: bannerOpacity,
+            }
+          ]}>
+            <Text style={styles.bannerText}>Bem-vindo de volta!</Text>
+          </Animated.View>
 
-            {/* Nome do App */}
-            <Animated.View style={[
-              styles.appNameContainer,
-              {
-                paddingVertical: appNamePadding,
-              }
-            ]}>
-              <Text style={[styles.appTitle, { color: colors.text }]}>Meu App</Text>
-            </Animated.View>
+          {/* Nome do App */}
+          <Animated.View style={[
+            styles.appNameContainer,
+            {
+              paddingVertical: appNamePadding,
+            }
+          ]}>
+            <Text style={[styles.appTitle, { color: colors.text }]}>Meu App</Text>
+          </Animated.View>
 
-            {/* Formulário */}
-            <View style={styles.formContainer}>
-              {error ? (
-                <View style={styles.errorContainer}>
-                  <Text style={[styles.errorText, { color: '#FF3B30' }]}>{error}</Text>
-                </View>
-              ) : null}
+          {/* Formulário */}
+          <View style={styles.formContainer}>
+            {error ? (
+              <View style={styles.errorContainer}>
+                <Text style={[styles.errorText, { color: '#FF3B30' }]}>{error}</Text>
+              </View>
+            ) : null}
 
-              <Input
-                label="Email"
-                placeholder="Digite seu email"
-                value={email}
-                onChangeText={(text) => {
-                  setEmail(text);
-                  if (error) setError('');
-                }}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                variant="default"
-                size="large"
-              />
+            <Input
+              label="Email"
+              placeholder="Digite seu email"
+              value={email}
+              onChangeText={(text) => {
+                setEmail(text);
+                if (error) setError('');
+              }}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              variant="default"
+              size="large"
+            />
 
-              <Input
-                label="Senha"
-                placeholder="Digite sua senha"
-                value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                  if (error) setError('');
-                }}
-                secureTextEntry
-                autoCapitalize="none"
-                autoCorrect={false}
-                variant="default"
-                size="large"
-              />
+            <Input
+              label="Senha"
+              placeholder="Digite sua senha"
+              value={password}
+              onChangeText={(text) => {
+                setPassword(text);
+                if (error) setError('');
+              }}
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              variant="default"
+              size="large"
+            />
 
-              {/* Botões */}
-              <Button
-                title="Entrar"
-                onPress={handleLogin}
-                variant="primary"
-                size="large"
-                loading={loading}
-                disabled={loading}
-                style={styles.loginButton}
-              />
+            {/* Botões */}
+            <Button
+              title="Entrar"
+              onPress={handleLogin}
+              variant="primary"
+              size="large"
+              loading={loading}
+              disabled={loading}
+              style={styles.loginButton}
+            />
 
-              <Button
-                title="Criar Conta"
-                onPress={handleRegister}
-                variant="outline"
-                size="large"
-                style={styles.registerButton}
-              />
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
+            <Button
+              title="Criar Conta"
+              onPress={handleRegister}
+              variant="outline"
+              size="large"
+              style={styles.registerButton}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }
